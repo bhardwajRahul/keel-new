@@ -42,3 +42,8 @@ tempfile.workspace = true
 tokio-tungstenite.workspace = true
 # In-process registry server for the two-engine workspace integration tests.
 keel-sync = { workspace = true, features = ["mock-server"] }
+
+# Developer diagnostics live outside the runtime source tree.
+[[example]]
+name = "sidecar_probe"
+path = "../../tools/diagnostics/engine/sidecar_probe.rs"

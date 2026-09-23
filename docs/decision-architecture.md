@@ -94,7 +94,7 @@ Keel does not run a selector for compaction, completion, or handoff when it has 
 
 Controlling an external loop end to end would require an interception point for every proposed action: inspect current state, select, validate, execute the stored action, then observe again. The current ACP adapters do not expose that complete boundary.
 
-Automatic training is also absent. See the separately labeled [improvement-loop proposal](improvement-loop.md).
+Automatic training is also absent. See the separately labeled [improvement-loop proposal](proposals/improvement-loop.md).
 
 ## model references
 

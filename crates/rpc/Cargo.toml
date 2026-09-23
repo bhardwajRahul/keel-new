@@ -21,3 +21,12 @@ uuid.workspace = true
 
 [dev-dependencies]
 keel-doc.workspace = true
+
+# Developer diagnostics live outside the runtime source tree.
+[[example]]
+name = "e2e_driver"
+path = "../../tools/diagnostics/rpc/e2e_driver.rs"
+
+[[example]]
+name = "rpc_probe"
+path = "../../tools/diagnostics/rpc/rpc_probe.rs"

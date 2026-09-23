@@ -48,6 +48,9 @@ cargo build -p keel --bin keel --release
 ```
 
 The binary is written to `target/release/keel`.
+Keel is the default workspace member, so `cargo build --release` selects the
+same application. Optional crates in `extras/` and `tools/dsh-cli` remain
+available through `-p` or `--workspace`.
 
 ## 4. package the app
 
@@ -90,10 +93,14 @@ Run these when you want to check a local build:
 
 ```sh
 cargo fmt --all -- --check
+cargo check --workspace --all-targets --locked
 cargo test -p laya-local -p jev-core -p keel-engine -p keel-harness
 ```
 
-The historical results and their limits are in the [build report](build-report.md). These commands do not measure coding-quality gains.
+For the complete suite, use `cargo test --workspace --locked -- --test-threads=1`.
+The [developer guide](development.md) explains the optional packages and tools.
+
+The historical results and their limits are in the [build report](archive/build-report-0.2.0.md). These commands do not measure coding-quality gains.
 
 ## pinned assets
 

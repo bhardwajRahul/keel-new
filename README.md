@@ -49,13 +49,18 @@ See the [user guide](docs/guide.md) for setup, status commands, and troubleshoot
 ## what this build does not claim
 
 - Decision records support evaluation; **automatic training is not implemented**.
-- Build checks do not establish better coding outcomes. See the dated [build report](docs/build-report.md).
+- Build checks do not establish better coding outcomes. See the dated [build report](docs/archive/build-report-0.2.0.md).
 - External ACP tools do not all pass through Laya or Jev.
 - `keel computer-use decide` selects a prepared action ID; it does not click or type.
 - Voice input uses macOS Dictation. Native Codex realtime voice and cloud sync are absent.
 - App packages are ad hoc signed development builds. Public installer distribution still needs Developer ID signing and notarization.
 
 ## find your way through the source
+
+The application and its runtime dependencies live in `apps/` and `crates/`.
+Optional imported libraries are in [`extras/`](extras/README.md); diagnostic
+programs and maintenance utilities are in [`tools/`](tools/README.md).
+See the [developer guide](docs/development.md) for the complete layout and checks.
 
 | Start here | Responsibility |
 | --- | --- |
@@ -68,14 +73,17 @@ See the [user guide](docs/guide.md) for setup, status commands, and troubleshoot
 | [`crates/jev-core`](crates/jev-core) | Typed decision requests and direct TypeSafe client. |
 | [`agent.rs`](crates/dsh/agent-loop/src/agent.rs) | Embedded DeepSeek loop and tool-dispatch checks. |
 
+A plain `cargo build` or `cargo run` selects Keel. Use `cargo test --workspace`
+to check all packages, including optional libraries and the standalone CLI.
+
 ## evidence and next steps
 
-Read the [architecture](docs/decision-architecture.md) for the implemented boundaries, the [build report](docs/build-report.md) for recorded checks, and the [improvement-loop proposal](docs/improvement-loop.md) for the evaluation work still needed.
+Read the [architecture](docs/decision-architecture.md) for the implemented boundaries, the [build report](docs/archive/build-report-0.2.0.md) for recorded checks, and the [improvement-loop proposal](docs/proposals/improvement-loop.md) for the evaluation work still needed.
 
-The separate [Jev Engineering repository](https://github.com/codejunkie99/jev-engineering) contains the framework, paper, and examples. The [article source index](docs/article-sources.md) points to this application's source and build documents.
+The separate [Jev Engineering repository](https://github.com/codejunkie99/jev-engineering) contains the framework, paper, and examples. The [article source index](docs/archive/article-sources-0.2.0.md) points to this application's source and build documents.
 
 ## credits and licenses
 
 Keel retains the source notices for its Avid-derived UI and embedded DeepSeek components. Local inference uses [Laya](https://github.com/NandhaKishorM/laya) and the [Laya Core ML runtime](https://github.com/mizorewww/laya-coreml).
 
-See [LICENSE](LICENSE), [UI license](LICENSE.ui-base), [DeepSeek license](LICENSE.deepseek-harness), [Laya runtime license](LICENSE.laya-coreml), and the [third-party notices](THIRD_PARTY_NOTICES.md).
+See [LICENSE](LICENSE), [UI license](licenses/LICENSE.ui-base), [DeepSeek license](licenses/LICENSE.deepseek-harness), [Laya runtime license](licenses/LICENSE.laya-coreml), and the [third-party notices](THIRD_PARTY_NOTICES.md).

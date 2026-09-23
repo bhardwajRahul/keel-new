@@ -80,4 +80,4 @@ Use macOS Dictation in the composer for voice text. Native Codex realtime voice 
 
 ## know what was checked
 
-The [build report](build-report.md) records the September 2026 local checks, provider setup results, and packaging limits. It is historical evidence, not a guarantee about your machine.
+The [build report](archive/build-report-0.2.0.md) records the September 2026 local checks, provider setup results, and packaging limits. It is historical evidence, not a guarantee about your machine.

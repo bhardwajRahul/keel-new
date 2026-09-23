@@ -63,14 +63,10 @@ if [[ -n "$laya_model" ]]; then
   ditto "$laya_model" "$bundle/Contents/Resources/laya-model"
   rm -rf "$bundle/Contents/Resources/laya-model/.cache"
 fi
-cp "$root/LICENSE.laya-coreml" "$bundle/Contents/Resources/LICENSE.laya-coreml"
-cp "$root/NOTICE.laya-coreml" "$bundle/Contents/Resources/NOTICE.laya-coreml"
+# Keep the same layout as the source notices so their relative links resolve.
 cp "$root/LICENSE" "$bundle/Contents/Resources/LICENSE"
-cp "$root/LICENSE.ui-base" "$bundle/Contents/Resources/LICENSE.ui-base"
-cp "$root/LICENSE.deepseek-harness" "$bundle/Contents/Resources/LICENSE.deepseek-harness"
 cp "$root/THIRD_PARTY_NOTICES.md" "$bundle/Contents/Resources/THIRD_PARTY_NOTICES.md"
-cp "$root/THIRD_PARTY_NOTICES.deepseek-harness.md" "$bundle/Contents/Resources/THIRD_PARTY_NOTICES.deepseek-harness.md"
-cp "$root/THIRD_PARTY_NOTICES.syntax.md" "$bundle/Contents/Resources/THIRD_PARTY_NOTICES.syntax.md"
+ditto "$root/licenses" "$bundle/Contents/Resources/licenses"
 cat > "$bundle/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

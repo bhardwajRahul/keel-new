@@ -1,0 +1,17 @@
+# Local build products and downloaded model/worker assets.
+/target/
+/build/
+/dist/
+/.refs/
+
+# Local environments and editor/indexer state.
+/.venv/
+/.keel/
+/.codebase-memory/
+/.codegraph/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.DS_Store
