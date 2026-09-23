@@ -1,0 +1,17 @@
+[package]
+name = "dsh-settings"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "User-settings capability seam: service definition, namespace resolution, and secret redaction (port of @deepseek-ai/dsh-settings)."
+
+[dependencies]
+dsh-cordis = { workspace = true }
+dsh-brand = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+futures = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }

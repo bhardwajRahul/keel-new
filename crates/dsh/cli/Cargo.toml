@@ -1,0 +1,34 @@
+[package]
+name = "dsh-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Rust port of the dsh CLI: the headless bundle composition — one task in, a streamed answer out."
+
+[[bin]]
+name = "dsh"
+path = "src/main.rs"
+
+[dependencies]
+dsh-agent = { workspace = true }
+dsh-agent-loop = { workspace = true }
+dsh-cordis = { workspace = true }
+dsh-fs = { workspace = true }
+dsh-home-paths = { workspace = true }
+dsh-shell = { workspace = true }
+dsh-llm = { workspace = true }
+dsh-llm-deepseek = { workspace = true }
+dsh-session = { workspace = true }
+dsh-session-persistence = { workspace = true }
+dsh-session-persistence-jsonl = { workspace = true }
+dsh-system-prompt = { workspace = true }
+dsh-tools = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
+futures = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+uuid = { workspace = true }

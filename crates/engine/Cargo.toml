@@ -1,0 +1,44 @@
+[package]
+name = "keel-engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+keel-proto.workspace = true
+keel-doc.workspace = true
+keel-sync.workspace = true
+keel-harness.workspace = true
+dsh-harness-bridge.workspace = true
+keel-rpc.workspace = true
+keel-update.workspace = true
+jev-core.workspace = true
+laya-local.workspace = true
+loro.workspace = true
+tokio.workspace = true
+futures.workspace = true
+async-trait.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+rusqlite.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+notify.workspace = true
+portable-pty.workspace = true
+base64 = "0.22"
+libc.workspace = true
+gethostname.workspace = true
+tokio-util = { workspace = true, features = ["rt"] }
+sha2.workspace = true
+reqwest.workspace = true
+ignore.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio-tungstenite.workspace = true
+# In-process registry server for the two-engine workspace integration tests.
+keel-sync = { workspace = true, features = ["mock-server"] }

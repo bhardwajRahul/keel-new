@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="880" viewBox="0 0 1280 880" role="img" aria-labelledby="title desc">
+<title id="title">the selector chooses. the host checks.</title><desc id="desc">Fresh unpinned tasks receive prepared route choices. One backend selects or abstains; the host rechecks. Embedded DeepSeek uses host-enforced tool focus. External ACP agents keep their own internal loops.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker></defs>
+<rect width="1280" height="880" fill="#ffffff"/>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;fill:#172234}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.muted{fill:#576880}</style>
+<text x="40" y="42" font-size="15" class="mono muted" text-anchor="start">01 / implemented architecture</text>
+<text x="40" y="100" font-size="38" class="" text-anchor="start">the selector chooses. the host checks.</text>
+<rect x="40" y="160" width="270" height="125" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="60" y="192" font-size="21" class="" text-anchor="start">fresh, unpinned task</text>
+<text x="60" y="222" font-size="17" class="muted" text-anchor="start">pinned and existing sessions</text>
+<text x="60" y="248" font-size="17" class="muted" text-anchor="start">keep their current route</text>
+<rect x="350" y="160" width="270" height="125" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="370" y="192" font-size="21" class="" text-anchor="start">prepare routes</text>
+<text x="370" y="222" font-size="17" class="muted" text-anchor="start">installed, enabled providers</text>
+<text x="370" y="248" font-size="17" class="muted" text-anchor="start">and eligible model options</text>
+<rect x="660" y="160" width="270" height="125" rx="7" fill="#edf4ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="680" y="192" font-size="21" class="" text-anchor="start">selected backend</text>
+<text x="680" y="222" font-size="17" class="muted" text-anchor="start">local laya or hosted jev</text>
+<text x="680" y="248" font-size="17" class="muted" text-anchor="start">returns an id or abstains</text>
+<rect x="970" y="160" width="270" height="125" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="990" y="192" font-size="21" class="" text-anchor="start">host rechecks</text>
+<text x="990" y="222" font-size="17" class="muted" text-anchor="start">current state and eligibility</text>
+<text x="990" y="248" font-size="17" class="muted" text-anchor="start">invalid choice → fallback</text>
+<polyline points="310,222 350,222" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="620,222 660,222" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="930,222 970,222" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="1105,285 1105,330 640,330 640,365" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="640" y="397" font-size="19" class="" text-anchor="middle">coding adapter determines who owns the next loop</text>
+<polyline points="640,410 325,410 325,450" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="640,410 955,410 955,450" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="40" y="450" width="570" height="290" rx="7" fill="#edf4ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="60" y="482" font-size="21" class="" text-anchor="start">embedded deepseek</text>
+<rect x="670" y="450" width="570" height="290" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="690" y="482" font-size="21" class="" text-anchor="start">external acp agent</text>
+<text x="60" y="525" font-size="17" class="" text-anchor="start">1. selector chooses inspect / implement / verify / answer</text>
+<text x="60" y="572" font-size="17" class="" text-anchor="start">2. host prepares and advertises allowed tools</text>
+<text x="60" y="619" font-size="17" class="" text-anchor="start">3. coding model proposes output or tool calls</text>
+<text x="60" y="666" font-size="17" class="" text-anchor="start">4. host checks the tool and permissions before dispatch</text>
+<text x="690" y="525" font-size="17" class="" text-anchor="start">1. host starts the selected provider session</text>
+<text x="690" y="572" font-size="17" class="" text-anchor="start">2. provider owns its internal tool loop</text>
+<text x="690" y="619" font-size="17" class="" text-anchor="start">3. compatible sessions can receive installed</text>
+<text x="690" y="666" font-size="17" class="" text-anchor="start">   codex computer-use mcp tools</text>
+<text x="40" y="778" font-size="18" class="muted" text-anchor="start">normal mode skips selection; ordinary host permissions still apply.</text>
+<path d="M40 814H1240" stroke="#c8d4e4"/>
+<text x="40" y="846" font-size="15" class="mono muted" text-anchor="start">implemented boundaries · selecting an action never grants permission</text>
+</svg>

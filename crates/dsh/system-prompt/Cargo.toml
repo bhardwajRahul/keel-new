@@ -1,0 +1,20 @@
+[package]
+name = "dsh-system-prompt"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Ordered prompt sections, dynamic context, tool schemas, and prompt variables (port of @deepseek-ai/dsh-system-prompt)."
+
+[dependencies]
+anyhow = { workspace = true }
+dsh-cordis = { workspace = true }
+dsh-invariants = { workspace = true }
+dsh-llm = { workspace = true }
+dsh-scope = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

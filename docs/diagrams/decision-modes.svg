@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+<title id="title">three modes. one host in control.</title><desc id="desc">Laya runs locally with its worker and model. Jev is opt-in and uses a protected credential for TypeSafe. Normal mode skips selector calls. A saved Laya preference can remain pending while installation finishes.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker></defs>
+<rect width="1280" height="760" fill="#ffffff"/>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;fill:#172234}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.muted{fill:#576880}</style>
+<text x="40" y="42" font-size="15" class="mono muted" text-anchor="start">02 / decision modes</text>
+<text x="40" y="100" font-size="38" class="" text-anchor="start">three modes. one host in control.</text>
+<rect x="40" y="165" width="570" height="145" rx="7" fill="#edf4ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="60" y="197" font-size="21" class="" text-anchor="start">laya / default</text>
+<text x="60" y="227" font-size="17" class="muted" text-anchor="start">local core ml worker</text>
+<text x="60" y="253" font-size="17" class="muted" text-anchor="start">pinned model files required</text>
+<text x="60" y="279" font-size="17" class="muted" text-anchor="start">no hosted selector call</text>
+<polyline points="610,238 800,238 800,323 900,323" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="40" y="335" width="570" height="145" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="60" y="367" font-size="21" class="" text-anchor="start">jev / opt-in</text>
+<text x="60" y="397" font-size="17" class="muted" text-anchor="start">direct typesafe request</text>
+<text x="60" y="423" font-size="17" class="muted" text-anchor="start">existing protected credential</text>
+<text x="60" y="449" font-size="17" class="muted" text-anchor="start">no key-entry screen</text>
+<polyline points="610,408 800,408 800,323 900,323" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="40" y="505" width="570" height="145" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="60" y="537" font-size="21" class="" text-anchor="start">normal / bypass</text>
+<text x="60" y="567" font-size="17" class="muted" text-anchor="start">skip the selector</text>
+<text x="60" y="593" font-size="17" class="muted" text-anchor="start">ordinary route behavior</text>
+<text x="60" y="619" font-size="17" class="muted" text-anchor="start">provider setup still required</text>
+<polyline points="610,578 900,578" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="900" y="260" width="340" height="130" rx="7" fill="#edf4ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="920" y="292" font-size="21" class="" text-anchor="start">host checks the choice</text>
+<text x="920" y="322" font-size="17" class="muted" text-anchor="start">validate eligible route</text>
+<text x="920" y="348" font-size="17" class="muted" text-anchor="start">apply or use fallback</text>
+<rect x="900" y="520" width="340" height="100" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="920" y="552" font-size="21" class="" text-anchor="start">ordinary harness</text>
+<text x="920" y="582" font-size="17" class="muted" text-anchor="start">existing permissions remain</text>
+<text x="40" y="132" font-size="18" class="muted" text-anchor="start">while laya installs: save the preference; keep the ordinary harness usable.</text>
+<path d="M40 694H1240" stroke="#c8d4e4"/>
+<text x="40" y="726" font-size="15" class="mono muted" text-anchor="start">local describes the selector · coding workers may still use hosted models</text>
+</svg>

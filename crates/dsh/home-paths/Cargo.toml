@@ -1,0 +1,12 @@
+[package]
+name = "dsh-home-paths"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Filesystem path helpers for the DeepSeek Harness home (port of @deepseek-ai/dsh-home-paths)."
+
+[dependencies]
+
+[dev-dependencies]
+tempfile = { workspace = true }

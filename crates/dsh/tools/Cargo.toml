@@ -1,0 +1,23 @@
+[package]
+name = "dsh-tools"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Tool registry, schema DSL, and pre/guard/around/post/result execution pipeline (port of @deepseek-ai/dsh-tools)."
+
+[dependencies]
+anyhow = { workspace = true }
+dsh-agent = { workspace = true }
+dsh-cordis = { workspace = true }
+dsh-llm = { workspace = true }
+dsh-scope = { workspace = true }
+dsh-timeout = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+dsh-session = { workspace = true }
+tokio = { workspace = true }

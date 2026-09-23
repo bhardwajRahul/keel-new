@@ -1,0 +1,34 @@
+[package]
+name = "dsh-agent-loop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Rust port of @deepseek-ai/dsh-agent-loop: the ReAct driver over queued turns and step-boundary input, plus the agent factory."
+
+[dependencies]
+dsh-agent = { workspace = true }
+dsh-cordis = { workspace = true }
+dsh-llm = { workspace = true }
+dsh-session = { workspace = true }
+dsh-session-persistence = { workspace = true }
+dsh-system-prompt = { workspace = true }
+dsh-timeout = { workspace = true }
+dsh-tools = { workspace = true }
+jev-core = { workspace = true }
+keel-proto = { workspace = true }
+laya-local = { workspace = true }
+anyhow = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+dsh-fs = { workspace = true }
+dsh-shell = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true }

@@ -1,0 +1,17 @@
+[package]
+name = "dsh-scope"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Scoped-context primitive: scope keys, scope-filtered event dispatch, and scope-aware registry storage (port of @deepseek-ai/dsh-scope)."
+
+[dependencies]
+anyhow = { workspace = true }
+dsh-cordis = { workspace = true }
+dsh-invariants = { workspace = true }
+futures = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

@@ -1,0 +1,24 @@
+[package]
+name = "dsh-credentials-local"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "File-backed credentials provider under the live process environment (port of @deepseek-ai/dsh-credentials-local)."
+
+[dependencies]
+dsh-cordis = { workspace = true }
+dsh-credentials = { workspace = true }
+dsh-atomic-write = { workspace = true }
+dsh-home-paths = { workspace = true }
+dsh-launch-environment = { workspace = true }
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+futures = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

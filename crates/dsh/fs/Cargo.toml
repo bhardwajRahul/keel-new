@@ -1,0 +1,27 @@
+[package]
+name = "dsh-fs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Filesystem capability: ctx.fs seam + local provider, read-before-edit observation policy, and the read/write/edit/glob/grep tools (port of the @deepseek-ai/dsh-fs* packages)."
+
+[dependencies]
+anyhow = { workspace = true }
+dsh-agent = { workspace = true }
+dsh-cordis = { workspace = true }
+dsh-llm = { workspace = true }
+dsh-timeout = { workspace = true }
+dsh-tools = { workspace = true }
+futures = { workspace = true }
+ignore = { workspace = true }
+regex = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+similar = { workspace = true }
+tempfile = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+dsh-session = { workspace = true }
+tokio = { workspace = true }

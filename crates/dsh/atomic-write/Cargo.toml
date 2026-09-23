@@ -1,0 +1,10 @@
+[package]
+name = "dsh-atomic-write"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Atomic file replacement and cross-process writer locking (port of @deepseek-ai/dsh-atomic-write)."
+
+[dependencies]
+tempfile = { workspace = true }

@@ -1,0 +1,24 @@
+[package]
+name = "dsh-llm-deepseek"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Rust port of @deepseek-ai/dsh-llm-deepseek: the direct-fetch DeepSeek (OpenAI-compatible) chat-completions adapter."
+
+[dependencies]
+dsh-llm = { workspace = true }
+dsh-timeout = { workspace = true }
+anyhow = { workspace = true }
+async-stream = { workspace = true }
+chrono = { workspace = true }
+futures = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

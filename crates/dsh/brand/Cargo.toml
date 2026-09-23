@@ -1,0 +1,13 @@
+[package]
+name = "dsh-brand"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Nominal-typing primitive for branded cross-boundary string ids (port of @deepseek-ai/dsh-brand)."
+
+[dependencies]
+serde = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

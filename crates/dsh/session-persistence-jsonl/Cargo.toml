@@ -1,0 +1,26 @@
+[package]
+name = "dsh-session-persistence-jsonl"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Rust port of @deepseek-ai/dsh-session-persistence-jsonl: the JSONL session-persistence backend."
+
+[dependencies]
+dsh-cordis = { workspace = true }
+dsh-home-paths = { workspace = true }
+dsh-session = { workspace = true }
+dsh-session-persistence = { workspace = true }
+anyhow = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+dsh-llm = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true }

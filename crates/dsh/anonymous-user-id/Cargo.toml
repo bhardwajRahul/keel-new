@@ -1,0 +1,15 @@
+[package]
+name = "dsh-anonymous-user-id"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Per-harness-home anonymous user id for telemetry correlation (port of @deepseek-ai/dsh-anonymous-user-id)."
+
+[dependencies]
+dsh-brand = { workspace = true }
+dsh-home-paths = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

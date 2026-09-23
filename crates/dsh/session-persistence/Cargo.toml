@@ -1,0 +1,21 @@
+[package]
+name = "dsh-session-persistence"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Rust port of @deepseek-ai/dsh-session-persistence: the durable session-storage seam and write-behind batching."
+
+[dependencies]
+dsh-cordis = { workspace = true }
+dsh-session = { workspace = true }
+anyhow = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

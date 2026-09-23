@@ -1,0 +1,339 @@
+//! Loaders: the Keel pulse loader, the gradient matrix spinner, and the local
+//! engine boot state. All motion routes through `crate::motion` pure helpers, so
+//! the math is unit-tested and these elements are testable-by-compile.
+//!
+//! Rendering pattern: each cell is its own `with_animation` repeating element
+//! sharing one period; per-cell offsets come from [`motion::staggered_phase`],
+//! so all cells stay phase-locked (they start on the same frame) without a
+//! shared clock. Cells animate inside fixed-size slots — opacity and inner size
+//! are paint-local and never move surrounding layout. Reduced motion snaps every
+//! cell to its rest state automatically (gpui `reduce_motion`).
+
+use gpui::{AnyElement, App, EntityId, IntoElement, ParentElement, SharedString, Styled, div, px};
+
+use crate::motion::{self, GRADIENT_SPIN, KEEL_PULSE, PULSE_STAGGER};
+use crate::theme::Theme;
+
+// Shared with the terminal viewport (`keel_proto::motion`) so both animate the
+// same loaders from the same numbers.
+pub use keel_proto::motion::{KEEL_CELLS, MARK_CELLS, MARK_SPREAD, MATRIX_SIDE, mark_cell_stagger};
+
+/// The animated keel mark (keel-loader.tsx `KeelLoader`): the full logo
+/// pixel grid with a light wave sweeping tail→head. Each cell rests dim
+/// (opacity 0.08, scale 0.9) and flares to full as the crest passes; per-cell
+/// stagger follows the flight axis. `height_px` sets the mark's height (width
+/// follows the 820:940 canvas).
+pub fn keel_mark_loader(
+    _id: &'static str,
+    theme: &Theme,
+    height_px: f32,
+    view: EntityId,
+    cx: &mut App,
+) -> impl IntoElement {
+    let color = theme.text;
+    let scale = height_px / 940.0;
+    let cell = 100.0 * scale;
+    let delta = motion::pulse_delta(&KEEL_PULSE, view, cx);
+    div()
+        .relative()
+        .w(px(820.0 * scale))
+        .h(px(height_px))
+        .children(MARK_CELLS.iter().map(move |&(x, y)| {
+            let stagger = mark_cell_stagger(x, y);
+            // Fixed slot; the animated cell breathes inside it (paint-local).
+            div()
+                .absolute()
+                .left(px(x * scale))
+                .top(px(y * scale))
+                .size(px(cell))
+                .flex()
+                .items_center()
+                .justify_center()
+                .child({
+                    // Negative CSS delay ⇒ the cell starts mid-cycle:
+                    // the stagger ADDS phase (keel-loader.tsx delayFor).
+                    let phase = (delta + stagger).rem_euclid(1.0);
+                    div()
+                        .rounded(px(16.0 * scale))
+                        .bg(color)
+                        .opacity(motion::pulse_opacity(phase))
+                        .size(px(cell * motion::pulse_scale(phase)))
+                })
+        }))
+}
+
+/// The keel wave loader: a row of cells pulsing opacity 0.08→1 / scale 0.9→1
+/// over 2.4s with a 0.15s stagger per cell.
+///
+/// `id` scopes the per-cell animation state — give each loader instance a
+/// distinct id.
+pub fn keel_loader(
+    _id: &'static str,
+    theme: &Theme,
+    cell_px: f32,
+    view: EntityId,
+    cx: &mut App,
+) -> impl IntoElement {
+    let color = theme.text;
+    let slot = cell_px;
+    let delta = motion::pulse_delta(&KEEL_PULSE, view, cx);
+    div()
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(slot / 2.0))
+        .children((0..KEEL_CELLS).map(move |i| {
+            // Fixed slot; the animated cell breathes inside it.
+            div()
+                .size(px(slot))
+                .flex()
+                .items_center()
+                .justify_center()
+                .child({
+                    let phase = motion::staggered_phase(delta, i, PULSE_STAGGER);
+                    div()
+                        .rounded(px(slot / 4.0))
+                        .bg(color)
+                        .opacity(motion::pulse_opacity(phase))
+                        .size(px(slot * motion::pulse_scale(phase)))
+                })
+        }))
+}
+
+pub use keel_proto::motion::{GSPIN_DIM, GSPIN_ROW_TINTS};
+
+const KEEL_ASCII: &[&str] = &[
+    "    ###             ###",
+    "    ###             ###",
+    "    ######       ######",
+    "    ###  ###     ###  ##",
+    "    ###   ###   ###   ##",
+    "    ###    ### ###    ##",
+    "    ###     #####     ###",
+    "    ###      ###      ###",
+    "    ###      ###      ###",
+    "    ###      ###      ###",
+    "    ####     ###     ####",
+    "     ######  ###  ######",
+    "       ###############",
+];
+const KEEL_ASCII_WIDTH: usize = 25;
+
+fn one_shot_phase(elapsed: std::time::Duration) -> f32 {
+    (elapsed.as_secs_f32() / KEEL_PULSE.total().as_secs_f32()).min(1.0)
+}
+
+/// Dense monospaced trace of the app's Y/bowl mark. Each solid character uses
+/// the original mark loader's 2.4s tail-to-head phase sweep; reduced motion
+/// paints the complete silhouette.
+pub fn ascii_keel_mark(
+    theme: &Theme,
+    font_px: f32,
+    animate: bool,
+    started_at: Option<std::time::Instant>,
+    view: EntityId,
+    cx: &mut App,
+) -> AnyElement {
+    let reduced_motion = cx.reduce_motion();
+    let phase = if animate {
+        let shared_phase = motion::pulse_delta(&KEEL_PULSE, view, cx);
+        started_at
+            .map(|started| one_shot_phase(started.elapsed()))
+            .unwrap_or(shared_phase)
+    } else {
+        1.0
+    };
+    div()
+        .flex()
+        .flex_col()
+        .items_center()
+        .font_family(theme.font_mono.clone())
+        .text_size(px(font_px))
+        .line_height(px(font_px * 1.08))
+        .text_color(gpui::rgb(0x59e6ce))
+        .children(KEEL_ASCII.iter().enumerate().map(|(index, row)| {
+            div()
+                .w(px(font_px * 0.62 * KEEL_ASCII_WIDTH as f32))
+                .h(px(font_px * 1.08))
+                .flex()
+                .flex_row()
+                .children(row.chars().enumerate().map(move |(column, character)| {
+                    let x = column as f32 / (KEEL_ASCII_WIDTH - 1) as f32 * 820.0;
+                    let y = index as f32 / (KEEL_ASCII.len() - 1) as f32 * 940.0;
+                    let character_phase = (phase + mark_cell_stagger(x, y)).rem_euclid(1.0);
+                    div()
+                        .w(px(font_px * 0.62))
+                        .text_center()
+                        .opacity(if character == ' ' {
+                            0.0
+                        } else if reduced_motion || !animate || phase >= 1.0 {
+                            1.0
+                        } else {
+                            motion::pulse_opacity(character_phase)
+                        })
+                        .child(SharedString::from(character.to_string()))
+                }))
+        }))
+        .into_any_element()
+}
+
+/// The gradient matrix spinner (WorkingIndicator), ported from keel's
+/// gradient-spin.tsx: a 3×3 grid of round cells tinted per row from the
+/// sunrise gradient. Each cell pulses opacity once per 750ms period; the
+/// per-cell phase follows the "arrow-up" pattern (the pulse enters at the
+/// bottom edge and converges toward the top-center cell), so the wave reads
+/// as travelling upward.
+pub fn gradient_spinner(
+    _id: &'static str,
+    _theme: &Theme,
+    cell_px: f32,
+    view: EntityId,
+    cx: &mut App,
+) -> impl IntoElement {
+    let center = (MATRIX_SIDE as f32 - 1.0) / 2.0;
+    let max = MATRIX_SIDE as f32 - 1.0 + center;
+    let delta = motion::pulse_delta(&GRADIENT_SPIN, view, cx);
+    div()
+        .flex()
+        .flex_col()
+        .gap(px(cell_px / 2.0))
+        .children((0..MATRIX_SIDE).map(move |row| {
+            let tint: gpui::Hsla = gpui::rgb(GSPIN_ROW_TINTS[row]).into();
+            div()
+                .flex()
+                .flex_row()
+                .gap(px(cell_px / 2.0))
+                .children((0..MATRIX_SIDE).map(move |col| {
+                    // Distance of this cell from the wave origin, normalized
+                    // into a phase offset (gradient-spin's `--gspin-phase`).
+                    let d = MATRIX_SIDE as f32 - 1.0 - row as f32 + (col as f32 - center).abs();
+                    let phase = if max == 0.0 { 0.0 } else { d / (max + 1.0) };
+                    div()
+                        .size(px(cell_px))
+                        .rounded(px(cell_px / 2.0))
+                        .bg(tint)
+                        .opacity(motion::gspin_opacity(delta + phase, GSPIN_DIM))
+                }))
+        }))
+}
+
+/// A 2×3 miniature of [`gradient_spinner`] sized for a status-dot slot
+/// (sessions-sidebar working rows): same row tints and pulse timing, but the
+/// brightness SNAKES around the grid's perimeter (every cell of a 2×3 grid is
+/// on the ring) instead of sweeping as a vertical wave — a tiny radial chase.
+/// ~6×10px footprint at the default 2.5px cells.
+pub fn mini_gradient_spinner(
+    key: impl Into<SharedString>,
+    cell_px: f32,
+    view: EntityId,
+    cx: &mut App,
+) -> impl IntoElement {
+    const COLS: usize = 2;
+    const ROWS: usize = 3;
+    /// Clockwise ring position of each `(row, col)` cell, top-left first:
+    /// (0,0) → (0,1) → (1,1) → (2,1) → (2,0) → (1,0).
+    const RING: [[usize; COLS]; ROWS] = [[0, 1], [5, 2], [4, 3]];
+    const RING_LEN: f32 = (COLS * ROWS) as f32;
+    let _key = key.into();
+    let delta = motion::pulse_delta(&GRADIENT_SPIN, view, cx);
+    div()
+        .flex()
+        .flex_col()
+        .gap(px(cell_px / 2.0))
+        .children((0..ROWS).map(move |row| {
+            let tint: gpui::Hsla = gpui::rgb(GSPIN_ROW_TINTS[row]).into();
+            div()
+                .flex()
+                .flex_row()
+                .gap(px(cell_px / 2.0))
+                .children((0..COLS).map(move |col| {
+                    let phase = RING[row][col] as f32 / RING_LEN;
+                    div()
+                        .size(px(cell_px))
+                        .rounded(px(cell_px / 2.0))
+                        .bg(tint)
+                        .opacity(motion::gspin_opacity(delta + phase, GSPIN_DIM))
+                }))
+        }))
+}
+
+/// A compact boot state shown only while the local engine is actually starting.
+/// The app mark is traced in ASCII while the local engine starts.
+pub fn boot_stage(theme: &Theme, view: EntityId, cx: &mut App) -> AnyElement {
+    div()
+        .size_full()
+        .flex()
+        .items_center()
+        .justify_center()
+        .child(
+            div()
+                .flex()
+                .flex_col()
+                .items_center()
+                .gap(px(12.0))
+                .child(ascii_keel_mark(theme, 6.5, true, None, view, cx))
+                .child(
+                    div()
+                        .mt(px(8.0))
+                        .text_size(px(18.0))
+                        .text_color(theme.text)
+                        .child("Keel"),
+                )
+                .child(
+                    div()
+                        .text_size(px(12.0))
+                        .text_color(theme.text_muted)
+                        .child("Opening your local workspace"),
+                )
+                .child(
+                    div()
+                        .mt(px(12.0))
+                        .h(px(2.0))
+                        .w(px(64.0))
+                        .rounded(px(1.0))
+                        .bg(theme.accent.opacity(0.55)),
+                ),
+        )
+        .into_any_element()
+}
+
+// Compile-time proof the specs referenced here stay wired to the catalog.
+const _: () = {
+    assert!(KEEL_PULSE.duration_ms == 2400);
+    assert!(GRADIENT_SPIN.duration_ms == 750);
+};
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn intro_wave_completes_and_art_fits() {
+        assert_eq!(one_shot_phase(std::time::Duration::ZERO), 0.0);
+        assert_eq!(
+            one_shot_phase(std::time::Duration::from_millis(KEEL_PULSE.duration_ms)),
+            1.0
+        );
+        assert_eq!(one_shot_phase(std::time::Duration::from_secs(3)), 1.0);
+        assert!(KEEL_ASCII.iter().all(|row| row.len() <= KEEL_ASCII_WIDTH));
+    }
+
+    #[test]
+    fn mark_stagger_follows_flight_axis() {
+        // Tail tip (720, 0) leads: near-maximal stagger (starts deepest into
+        // the cycle); head (0, 840) trails with stagger 0.
+        let tail = mark_cell_stagger(720.0, 0.0);
+        let head = mark_cell_stagger(0.0, 840.0);
+        assert!(tail > head, "tail {tail} should lead head {head}");
+        assert!((head - 0.0).abs() < 1e-6, "head stagger ≈ 0, got {head}");
+        assert!(tail <= MARK_SPREAD + 1e-6, "stagger capped at SPREAD");
+        // Every logo cell stays inside [0, SPREAD].
+        for &(x, y) in &MARK_CELLS {
+            let s = mark_cell_stagger(x, y);
+            assert!(
+                (0.0..=MARK_SPREAD + 1e-6).contains(&s),
+                "cell ({x},{y}) stagger {s}"
+            );
+        }
+    }
+}

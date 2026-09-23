@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="830" viewBox="0 0 1280 830" role="img" aria-labelledby="title desc">
+<title id="title">keep the evidence. review the change.</title><desc id="desc">Proposed process, not automatic training: record a decision, create a replay case, compare baseline and candidate, retain baseline if worse, and require human approval before a versioned change.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker></defs>
+<rect width="1280" height="830" fill="#ffffff"/>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;fill:#172234}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.muted{fill:#576880}</style>
+<text x="40" y="42" font-size="15" class="mono muted" text-anchor="start">03 / proposed improvement loop</text>
+<text x="40" y="100" font-size="38" class="" text-anchor="start">keep the evidence. review the change.</text>
+<rect x="40" y="170" width="270" height="145" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="60" y="202" font-size="21" class="" text-anchor="start">decision record</text>
+<text x="60" y="232" font-size="17" class="muted" text-anchor="start">options and selected id</text>
+<text x="60" y="258" font-size="17" class="muted" text-anchor="start">host check and fallback</text>
+<text x="60" y="284" font-size="17" class="muted" text-anchor="start">observed result</text>
+<rect x="350" y="170" width="270" height="145" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="370" y="202" font-size="21" class="" text-anchor="start">replay case</text>
+<text x="370" y="232" font-size="17" class="muted" text-anchor="start">relevant task state</text>
+<text x="370" y="258" font-size="17" class="muted" text-anchor="start">expected behavior</text>
+<text x="370" y="284" font-size="17" class="muted" text-anchor="start">repeatable conditions</text>
+<rect x="660" y="170" width="270" height="145" rx="7" fill="#edf4ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="680" y="202" font-size="21" class="" text-anchor="start">baseline + candidate</text>
+<text x="680" y="232" font-size="17" class="muted" text-anchor="start">same tasks and scoring</text>
+<text x="680" y="258" font-size="17" class="muted" text-anchor="start">one intentional change</text>
+<text x="680" y="284" font-size="17" class="muted" text-anchor="start">held-out final task set</text>
+<rect x="970" y="170" width="270" height="145" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="990" y="202" font-size="21" class="" text-anchor="start">compare outcomes</text>
+<text x="990" y="232" font-size="17" class="muted" text-anchor="start">task quality and failures</text>
+<text x="990" y="258" font-size="17" class="muted" text-anchor="start">total time and cost</text>
+<text x="990" y="284" font-size="17" class="muted" text-anchor="start">review effort</text>
+<polyline points="310,243 350,243" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="620,243 660,243" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="930,243 970,243" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="1105,315 1105,375 895,375 895,450" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="730" y="450" width="330" height="120" rx="7" fill="#edf4ff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="750" y="482" font-size="21" class="" text-anchor="start">human review</text>
+<text x="750" y="512" font-size="17" class="muted" text-anchor="start">inspect gains and regressions</text>
+<text x="750" y="538" font-size="17" class="muted" text-anchor="start">approve only with evidence</text>
+<polyline points="1060,510 1140,510 1140,635 950,635" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="660" y="580" width="290" height="120" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="680" y="612" font-size="21" class="" text-anchor="start">versioned change</text>
+<text x="680" y="642" font-size="17" class="muted" text-anchor="start">keep a rollback target</text>
+<text x="680" y="668" font-size="17" class="muted" text-anchor="start">use in future runs</text>
+<polyline points="730,510 565,510" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="570" y="493" font-size="15" class="mono muted" text-anchor="start">no improvement</text>
+<rect x="285" y="450" width="280" height="120" rx="7" fill="#fff" stroke="#c8d4e4" stroke-width="1.5"/>
+<text x="305" y="482" font-size="21" class="" text-anchor="start">keep baseline</text>
+<text x="305" y="512" font-size="17" class="muted" text-anchor="start">reject the candidate</text>
+<text x="305" y="538" font-size="17" class="muted" text-anchor="start">keep the failure case</text>
+<polyline points="660,640 175,640 175,315" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="205" y="623" font-size="15" class="mono muted" text-anchor="start">approved version → future records</text>
+<text x="40" y="746" font-size="18" class="muted" text-anchor="start">proposed workflow only; the current app records decisions and does not train itself.</text>
+<path d="M40 764H1240" stroke="#c8d4e4"/>
+<text x="40" y="796" font-size="15" class="mono muted" text-anchor="start">evaluation design · no coding-quality improvement is claimed here</text>
+</svg>
