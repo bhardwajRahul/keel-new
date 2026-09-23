@@ -1,5 +1,7 @@
 [workspace]
 resolver = "2"
+# A plain cargo build/run targets the application; --workspace includes optional tools.
+default-members = ["apps/keel"]
 members = [
     "crates/proto",
     "crates/doc",
@@ -15,6 +17,8 @@ members = [
     "crates/cloud-connect",
     "crates/dsh/*",
     "apps/keel",
+    "extras/dsh/*",
+    "tools/dsh-cli",
 ]
 
 [workspace.package]
@@ -40,19 +44,10 @@ keel-cloud-connect = { path = "crates/cloud-connect" }
 # deepseek-harness port (dsh-*)
 dsh-cordis = { path = "crates/dsh/cordis" }
 dsh-brand = { path = "crates/dsh/brand" }
-dsh-atomic-write = { path = "crates/dsh/atomic-write" }
 dsh-home-paths = { path = "crates/dsh/home-paths" }
-dsh-launch-environment = { path = "crates/dsh/launch-environment" }
 dsh-timeout = { path = "crates/dsh/timeout" }
-dsh-cmdline = { path = "crates/dsh/cmdline" }
 dsh-invariants = { path = "crates/dsh/invariants" }
 dsh-scope = { path = "crates/dsh/scope" }
-dsh-settings = { path = "crates/dsh/settings" }
-dsh-settings-file = { path = "crates/dsh/settings-file" }
-dsh-credentials = { path = "crates/dsh/credentials" }
-dsh-credentials-local = { path = "crates/dsh/credentials-local" }
-dsh-attachment = { path = "crates/dsh/attachment" }
-dsh-anonymous-user-id = { path = "crates/dsh/anonymous-user-id" }
 dsh-llm = { path = "crates/dsh/llm" }
 dsh-session = { path = "crates/dsh/session" }
 dsh-system-prompt = { path = "crates/dsh/system-prompt" }
@@ -65,6 +60,17 @@ dsh-agent-loop = { path = "crates/dsh/agent-loop" }
 dsh-fs = { path = "crates/dsh/fs" }
 dsh-shell = { path = "crates/dsh/shell" }
 dsh-harness-bridge = { path = "crates/dsh/harness-bridge" }
+
+# Optional imported support libraries (outside Keel's runtime dependency graph).
+dsh-atomic-write = { path = "extras/dsh/atomic-write" }
+dsh-launch-environment = { path = "extras/dsh/launch-environment" }
+dsh-cmdline = { path = "extras/dsh/cmdline" }
+dsh-settings = { path = "extras/dsh/settings" }
+dsh-settings-file = { path = "extras/dsh/settings-file" }
+dsh-credentials = { path = "extras/dsh/credentials" }
+dsh-credentials-local = { path = "extras/dsh/credentials-local" }
+dsh-attachment = { path = "extras/dsh/attachment" }
+dsh-anonymous-user-id = { path = "extras/dsh/anonymous-user-id" }
 
 # dsh port support
 regex = "1"
@@ -128,7 +134,7 @@ rusqlite = { version = "0.32", features = ["bundled"] }
 # misc
 # Global allocator for the binaries: returns freed pages to the OS. System
 # malloc (macOS libmalloc especially) retains the churn high-water mark as
-# permanent RSS - measured as the top residency cause in docs/memory-plan.md.
+# permanent RSS.
 mimalloc = "0.1"
 anyhow = "1"
 tempfile = "3"
@@ -147,7 +153,7 @@ reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"
 ignore = "0.4"
 
 [profile.release]
-# Distribution profile (scripts/package-linux.sh): thin LTO buys most of fat
+# Distribution profile: thin LTO buys most of fat
 # LTO's size/speed win at a fraction of the link time; strip debug symbols.
 lto = "thin"
 strip = "symbols"

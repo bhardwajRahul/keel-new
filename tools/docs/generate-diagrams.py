@@ -3,7 +3,7 @@
 from pathlib import Path
 from html import escape
 
-DEST = Path(__file__).resolve().parents[1] / 'docs' / 'diagrams'
+DEST = Path(__file__).resolve().parents[2] / 'docs'
 INK = '#172234'
 MUTED = '#576880'
 BLUE = '#2563eb'
@@ -34,8 +34,9 @@ class Figure:
         self.parts.append(f'<path d="M40 {y}H1240" stroke="{LINE}"/>')
         self.text(40,y+32,note,15,'mono muted')
     def save(self,name):
-        DEST.mkdir(parents=True,exist_ok=True)
-        (DEST/name).write_text('\n'.join(self.parts)+ '\n</svg>\n')
+        destination = DEST/name
+        destination.parent.mkdir(parents=True,exist_ok=True)
+        destination.write_text('\n'.join(self.parts)+ '\n</svg>\n')
 
 f=Figure('01 / implemented architecture','the selector chooses. the host checks.',
           'Fresh unpinned tasks receive prepared route choices. One backend selects or abstains; the host rechecks. Embedded DeepSeek uses host-enforced tool focus. External ACP agents keep their own internal loops.',880)
@@ -58,7 +59,7 @@ for i,t in enumerate(['1. host starts the selected provider session','2. provide
  f.text(690,525+i*47,t,17)
 f.text(40,778,'normal mode skips selection; ordinary host permissions still apply.',18,'muted')
 f.footer('implemented boundaries · selecting an action never grants permission')
-f.save('architecture.svg')
+f.save('diagrams/architecture.svg')
 
 f=Figure('02 / decision modes','three modes. one host in control.',
           'Laya runs locally with its worker and model. Jev is opt-in and uses a protected credential for TypeSafe. Normal mode skips selector calls. A saved Laya preference can remain pending while installation finishes.',760)
@@ -74,7 +75,7 @@ f.box(900,260,340,130,'host checks the choice',['validate eligible route','apply
 f.box(900,520,340,100,'ordinary harness',['existing permissions remain'])
 f.text(40,132,'while laya installs: save the preference; keep the ordinary harness usable.',18,'muted')
 f.footer('local describes the selector · coding workers may still use hosted models')
-f.save('decision-modes.svg')
+f.save('diagrams/decision-modes.svg')
 
 f=Figure('03 / proposed improvement loop','keep the evidence. review the change.',
           'Proposed process, not automatic training: record a decision, create a replay case, compare baseline and candidate, retain baseline if worse, and require human approval before a versioned change.',830)
@@ -92,5 +93,5 @@ f.box(285,450,280,120,'keep baseline',['reject the candidate','keep the failure 
 f.arrow('660,640 175,640 175,315','approved version → future records',(205,623))
 f.text(40,746,'proposed workflow only; the current app records decisions and does not train itself.',18,'muted')
 f.footer('evaluation design · no coding-quality improvement is claimed here')
-f.save('improvement-loop.svg')
+f.save('proposals/improvement-loop.svg')
 print('generated 3 documentation SVGs')

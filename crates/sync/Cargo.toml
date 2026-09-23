@@ -32,3 +32,16 @@ keel-proto.workspace = true
 tempfile.workspace = true
 # `start_paused` virtual-clock tests (the 2026-07-30 sync-stall regressions).
 tokio = { workspace = true, features = ["test-util"] }
+
+# Developer diagnostics live outside the runtime source tree.
+[[example]]
+name = "chat2_live"
+path = "../../tools/diagnostics/sync/chat2_live.rs"
+
+[[example]]
+name = "doc_surgery"
+path = "../../tools/diagnostics/sync/doc_surgery.rs"
+
+[[example]]
+name = "s2_reader"
+path = "../../tools/diagnostics/sync/s2_reader.rs"

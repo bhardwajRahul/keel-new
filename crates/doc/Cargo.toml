@@ -14,3 +14,12 @@ thiserror.workspace = true
 chrono.workspace = true
 tracing.workspace = true
 similar.workspace = true
+
+# Developer diagnostics live outside the runtime source tree.
+[[example]]
+name = "gen_fixture"
+path = "../../tools/diagnostics/doc/gen_fixture.rs"
+
+[[example]]
+name = "rebuild_whale"
+path = "../../tools/diagnostics/doc/rebuild_whale.rs"

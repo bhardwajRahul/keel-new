@@ -1,16 +1,16 @@
 # proposed improvement loop
 
-[Documentation](README.md) / improvement loop
+[Documentation](../README.md) / improvement loop
 
 **This is a proposal. Keel records decisions; it does not automatically train itself or deploy learned changes.**
 
-![Proposed improvement loop: save evidence, create a replay case, compare a candidate with a baseline, request human review, and version an approved change.](diagrams/improvement-loop.svg)
+![Proposed improvement loop: save evidence, create a replay case, compare a candidate with a baseline, request human review, and version an approved change.](improvement-loop.svg)
 
 ## what exists today
 
 The application records bounded choices, selector results, host validation, fallbacks, and observed outcomes. Those records give an evaluation a concrete starting point.
 
-See [decision architecture](decision-architecture.md) for the implemented boundaries and [build evidence](build-report.md) for the recorded checks.
+See [decision architecture](../decision-architecture.md) for the implemented boundaries and [build evidence](../archive/build-report-0.2.0.md) for the recorded checks.
 
 ## what to build next
 
