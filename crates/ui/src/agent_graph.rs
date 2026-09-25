@@ -1715,7 +1715,12 @@ impl AgentGraph {
                 )
                 .into_any_element();
         };
-        let live = statuses.get(&chat_id) == Some(&ChatIndicator::Working);
+        // Same predicate as the composer's `run_live`: a run blocked on a
+        // question can still be steered or stopped.
+        let live = matches!(
+            statuses.get(&chat_id),
+            Some(ChatIndicator::Working | ChatIndicator::AwaitingInput)
+        );
         let heading = match &sub {
             Some(label) => {
                 format!("Steer \u{201C}{title}\u{201D} about subagent \u{201C}{label}\u{201D}")
