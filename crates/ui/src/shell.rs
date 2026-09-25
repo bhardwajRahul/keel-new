@@ -132,6 +132,14 @@ pub fn apply_keymap(cx: &mut App, keymap: &KeymapConfig) {
     // these back the native menu key equivalents and must survive keymap
     // re-application.
     crate::app_menus::bind_keys(cx);
+    // Fixed: ⇧⌘G opens/closes the agent graph. Bound before the configurable
+    // shortcuts: GPUI prefers the last binding, so a custom combo on the same
+    // chord wins.
+    cx.bind_keys([KeyBinding::new(
+        &platform_combo("mod-shift-g"),
+        ToggleAgents,
+        None,
+    )]);
     cx.bind_keys([
         KeyBinding::new(
             &valid_or_default(&keymap.toggle_sidebar, "mod-s"),
@@ -156,8 +164,6 @@ pub fn apply_keymap(cx: &mut App, keymap: &KeymapConfig) {
         // Fixed: ⌘K summons the add-space palette (the ⌘K chip in its search
         // bar); pressing it again dismisses.
         KeyBinding::new(&platform_combo("mod-k"), AddSpacePalette, None),
-        // Fixed: ⇧⌘G opens/closes the agent graph.
-        KeyBinding::new(&platform_combo("mod-shift-g"), ToggleAgents, None),
     ]);
 }
 
@@ -1840,6 +1846,8 @@ impl Shell {
         if section == SettingsSection::Agents {
             self.accounts_page = None;
         }
+        // Settings hides the graph; drop it so its per-chat watches stop.
+        self.agent_graph = None;
         self.route = Route::Settings(section);
         self.nav.push(NavEntry::Settings(section));
         self.close_user_menu(cx);
@@ -1888,6 +1896,7 @@ impl Shell {
                         page.update(cx, |page, cx| page.refresh_decision_mode(cx));
                     }
                 }
+                self.agent_graph = None;
                 self.route = Route::Settings(section);
             }
         }
@@ -2046,7 +2055,11 @@ impl Shell {
 
     fn toggle_agent_graph(&mut self, cx: &mut Context<Self>) {
         if self.agent_graph.take().is_none() {
-            self.route = Route::Chat;
+            // Through close_settings, so the back/forward history records
+            // the chat route the graph replaces.
+            if matches!(self.route, Route::Settings(_)) {
+                self.close_settings(cx);
+            }
             let graph = cx.new(|cx| AgentGraph::new(self.state.clone(), cx));
             let sub = cx.subscribe(&graph, |this: &mut Shell, _, event, cx| match event {
                 AgentGraphEvent::OpenChat(chat_id) => {

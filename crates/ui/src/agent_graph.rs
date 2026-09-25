@@ -474,12 +474,22 @@ fn normalize_path(path: &str, cwd: Option<&str>) -> String {
         }
         _ => path.to_string(),
     };
-    let trimmed = joined.trim_end_matches('/');
-    if trimmed.is_empty() {
-        joined
-    } else {
-        trimmed.to_string()
+    // Resolve `.` and `..` lexically so `src/../lib.rs` meets `lib.rs`.
+    let absolute = joined.starts_with('/');
+    let mut parts: Vec<&str> = Vec::new();
+    for seg in joined.split('/') {
+        match seg {
+            "" | "." => {}
+            ".." if parts.last().is_some_and(|p| *p != "..") => {
+                parts.pop();
+            }
+            // Above the root stays at the root; a relative path keeps it.
+            ".." if absolute => {}
+            seg => parts.push(seg),
+        }
     }
+    let rest = parts.join("/");
+    if absolute { format!("/{rest}") } else { rest }
 }
 
 /// `(file name, parent shown relative to cwd)`.
@@ -535,7 +545,8 @@ fn scan(agent: &AgentSnapshot<'_>) -> Scan {
             });
             touch.wrote |= wrote;
             touch.order = order;
-            touch.live = !*resolved && working;
+            // Any unresolved touch keeps the file live.
+            touch.live |= !*resolved && working;
         }
     }
     let activity = match (agent.status, last_tool) {
@@ -1527,7 +1538,8 @@ impl AgentGraph {
             }
             NodeKind::Context => {
                 let path = node.key.strip_prefix("f:").unwrap_or_default();
-                let mut steps = Vec::new();
+                // Touches from several agents interleave by entry time.
+                let mut timed: Vec<(i64, Step)> = Vec::new();
                 for agent in graph.nodes.iter().filter(|n| n.kind == NodeKind::Agent) {
                     let live = statuses.get(&agent.chat_id) == Some(&ChatIndicator::Working);
                     let cwd = self
@@ -1537,9 +1549,9 @@ impl AgentGraph {
                         .iter()
                         .find(|c| c.id == agent.chat_id)
                         .and_then(|c| c.cwd.clone());
-                    for part in transcript(&agent.chat_id)
+                    for (at, part) in transcript(&agent.chat_id)
                         .iter()
-                        .flat_map(|e| e.parts.iter())
+                        .flat_map(|e| e.parts.iter().map(|p| (e.created_at, p)))
                     {
                         let MessagePart::Tool {
                             call,
@@ -1557,14 +1569,20 @@ impl AgentGraph {
                             continue;
                         }
                         let (label, _) = keel_proto::view::tool_chip_content(call);
-                        steps.push(Step {
-                            kind: StepKind::Tool,
-                            label: label.into(),
-                            detail: format!("by {}", agent.label),
-                            status: tool_status(*resolved, *is_error, live),
-                        });
+                        timed.push((
+                            at,
+                            Step {
+                                kind: StepKind::Tool,
+                                label: label.into(),
+                                detail: format!("by {}", agent.label),
+                                status: tool_status(*resolved, *is_error, live),
+                            },
+                        ));
                     }
                 }
+                // Stable: parts of one entry keep their order.
+                timed.sort_by_key(|(at, _)| *at);
+                let steps: Vec<Step> = timed.into_iter().map(|(_, step)| step).collect();
                 ("File", steps)
             }
         };
@@ -1762,7 +1780,8 @@ impl AgentGraph {
                         .id("agent-graph-steer")
                         .on_click(cx.listener(|this, _, _, cx| this.steer(cx))),
                 )
-                .when(live, |el| {
+                // Stop interrupts the parent run, so a subagent selection hides it.
+                .when(live && sub.is_none(), |el| {
                     el.child(
                         popover::btn_ghost(theme, "Stop", "agent-graph-stop")
                             .id("agent-graph-stop")
@@ -1943,6 +1962,10 @@ mod tests {
         assert_eq!(normalize_path("./src/a.rs", Some("/r")), "/r/src/a.rs");
         assert_eq!(normalize_path("/r/src/a.rs", Some("/x")), "/r/src/a.rs");
         assert_eq!(normalize_path("src/", None), "src");
+        assert_eq!(normalize_path("src/../lib.rs", Some("/r")), "/r/lib.rs");
+        assert_eq!(normalize_path("/r/./a//b.rs", None), "/r/a/b.rs");
+        assert_eq!(normalize_path("../x.rs", None), "../x.rs");
+        assert_eq!(normalize_path("/../x.rs", None), "/x.rs");
         assert_eq!(
             split_display("/r/src/a.rs", Some("/r")),
             ("a.rs".into(), "src".into())

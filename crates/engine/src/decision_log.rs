@@ -63,20 +63,31 @@ pub fn read_decisions(store_root: &Path) -> Result<Vec<ChatDecision>, EngineErro
     conn.busy_timeout(std::time::Duration::from_secs(5))
         .map_err(sqlite_error)?;
     let mut stmt = conn
-        .prepare("SELECT bytes FROM snapshots")
+        .prepare("SELECT doc_id, bytes FROM snapshots")
         .map_err(sqlite_error)?;
     let rows = stmt
-        .query_map([], |row| row.get::<_, Vec<u8>>(0))
+        .query_map([], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, Vec<u8>>(1)?))
+        })
+        .map_err(sqlite_error)?
+        .collect::<Result<Vec<_>, _>>()
         .map_err(sqlite_error)?;
+    let doc_ids: HashSet<&str> = rows.iter().map(|(id, _)| id.as_str()).collect();
 
     let mut seen = HashSet::new();
     let mut out = Vec::new();
-    for bytes in rows {
-        let bytes = bytes.map_err(sqlite_error)?;
+    for (doc_id, bytes) in &rows {
+        // Deleting a chat removes its live row but keeps the `.pre-chat2`
+        // rollback copy; a copy without its live row is a deleted chat.
+        if let Some(base) = doc_id.strip_suffix(".pre-chat2")
+            && !doc_ids.contains(base)
+        {
+            continue;
+        }
         let raw = loro::LoroDoc::new();
         // Registry and workspace docs share the table; a row that does not
         // import or has no chat id is not a session doc.
-        if raw.import(&bytes).is_err() {
+        if raw.import(bytes).is_err() {
             continue;
         }
         let doc = SessionDoc::from_doc(raw);
@@ -254,12 +265,19 @@ mod tests {
             std::slice::from_ref(&laya),
         );
         save(&store, "chat-2", "chat-2", std::slice::from_ref(&jev));
+        // Deleted chat: only its rollback copy is left.
+        let gone = event("d3", DecisionBackend::Laya, DecisionResult::Abstained, 30);
+        save(&store, "chat-3.pre-chat2", "chat-3", &[gone]);
         store.save_snapshot("registry1", b"not a loro doc").unwrap();
         drop(store);
 
         let decisions = read_decisions(dir.path()).unwrap();
         let ids: Vec<_> = decisions.iter().map(|d| d.event.id.as_str()).collect();
-        assert_eq!(ids, ["d2", "d1"], "deduped and oldest first");
+        assert_eq!(
+            ids,
+            ["d2", "d1"],
+            "deduped, deleted chat skipped, oldest first"
+        );
 
         let report = report(&decisions);
         assert_eq!(report.total, 2);
