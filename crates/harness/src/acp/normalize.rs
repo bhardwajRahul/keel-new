@@ -275,6 +275,22 @@ fn typed_call(update: &Value) -> ToolCall {
                 }),
             input: raw.cloned(),
         },
+        // Grok subagent spawn: first update titled `spawn_subagent` with a
+        // `description`, then retitled to the description with
+        // `variant: "Task"`. Same `Task: …` shape as the cursor arm so the
+        // name alone (inputs are stripped before sync) marks a subagent.
+        _ if title == "spawn_subagent" || raw_str("variant").as_deref() == Some("Task") => {
+            ToolCall::Unknown {
+                name: format!(
+                    "Task: {}",
+                    raw_str("description")
+                        .or_else(|| (!title.is_empty() && title != "spawn_subagent")
+                            .then(|| title.clone()))
+                        .unwrap_or_else(|| "Subagent".into())
+                ),
+                input: raw.cloned(),
+            }
+        }
         _ => ToolCall::Unknown {
             name: if title.is_empty() { kind.into() } else { title },
             input: raw.cloned(),
@@ -786,6 +802,34 @@ mod tests {
                 },
             }]
         );
+    }
+
+    #[test]
+    fn grok_spawn_subagent_maps_to_task_on_both_updates() {
+        let first = json!({
+            "sessionUpdate": "tool_call",
+            "toolCallId": "g1",
+            "title": "spawn_subagent",
+            "kind": "other",
+            "rawInput": { "description": "Subagent one check-in", "prompt": "say hi" },
+        });
+        let second = json!({
+            "sessionUpdate": "tool_call_update",
+            "toolCallId": "g1",
+            "title": "Subagent one check-in",
+            "rawInput": { "variant": "Task", "prompt": "say hi" },
+        });
+        for update in [first, second] {
+            let events = map_update(&update);
+            let Some(AgentEvent::ToolCall {
+                call: ToolCall::Unknown { name, .. },
+                ..
+            }) = events.first()
+            else {
+                panic!("expected a tool call, got {events:?}");
+            };
+            assert_eq!(name, "Task: Subagent one check-in");
+        }
     }
 
     #[test]

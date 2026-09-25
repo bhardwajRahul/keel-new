@@ -26,6 +26,7 @@ use keel_engine::InstanceLock;
 use keel_proto::{AuthState, WorkspaceScope};
 use keel_rpc::methods;
 
+use crate::agent_graph::{AgentGraph, AgentGraphEvent};
 use crate::changes::{Changes, ChangesEvent};
 use crate::composer::{Composer, ComposerEvent, ComposerInput, ComposerInputEvent};
 use crate::icons::{self, icon};
@@ -61,7 +62,13 @@ use spaces::{AddSpaceFlow, RenameSpaceDialog};
 
 actions!(
     shell,
-    [ToggleSidebar, ToggleChanges, AddSpacePalette, NewSession]
+    [
+        ToggleSidebar,
+        ToggleChanges,
+        AddSpacePalette,
+        NewSession,
+        ToggleAgents
+    ]
 );
 
 // ---------------------------------------------------------------------------
@@ -149,6 +156,8 @@ pub fn apply_keymap(cx: &mut App, keymap: &KeymapConfig) {
         // Fixed: ⌘K summons the add-space palette (the ⌘K chip in its search
         // bar); pressing it again dismisses.
         KeyBinding::new(&platform_combo("mod-k"), AddSpacePalette, None),
+        // Fixed: ⇧⌘G opens/closes the agent graph.
+        KeyBinding::new(&platform_combo("mod-shift-g"), ToggleAgents, None),
     ]);
 }
 
@@ -802,6 +811,11 @@ pub struct Shell {
     /// Session-row context menu: (chat id, window position).
     chat_menu: popover::Popup<(String, Point<Pixels>)>,
     rename_dialog: Option<RenameChatDialog>,
+    /// The agent graph (replaces the chat outlet while open). Dropped on
+    /// close, which drops its per-chat transcript watches.
+    agent_graph: Option<(Entity<AgentGraph>, Subscription)>,
+    /// Focus the graph's steer input on its first paint.
+    agent_graph_focus_pending: bool,
     /// Chat id awaiting delete confirmation.
     delete_confirm: Option<String>,
     /// Space-row context menu (dropdown rows): (space id, window position).
@@ -1051,6 +1065,8 @@ impl Shell {
             notifications_sub: None,
             chat_menu: popover::Popup::default(),
             rename_dialog: None,
+            agent_graph: None,
+            agent_graph_focus_pending: false,
             delete_confirm: None,
             space_menu: popover::Popup::default(),
             rename_space_dialog: None,
@@ -1393,7 +1409,9 @@ impl Shell {
     /// new-session canvas, where the titlebar carries no toggle to close it
     /// again (an earlier user request).
     fn right_pane_open(&self, cx: &App) -> bool {
-        !self.active_chat.is_empty() && self.panels.get(&self.panel_key(cx)).changes_open
+        self.agent_graph.is_none()
+            && !self.active_chat.is_empty()
+            && self.panels.get(&self.panel_key(cx)).changes_open
     }
 
     /// The current chat's terminal flag (per-session, in-memory).
@@ -2024,6 +2042,26 @@ impl Shell {
                 .ok();
             }
         }));
+    }
+
+    fn toggle_agent_graph(&mut self, cx: &mut Context<Self>) {
+        if self.agent_graph.take().is_none() {
+            self.route = Route::Chat;
+            let graph = cx.new(|cx| AgentGraph::new(self.state.clone(), cx));
+            let sub = cx.subscribe(&graph, |this: &mut Shell, _, event, cx| match event {
+                AgentGraphEvent::OpenChat(chat_id) => {
+                    this.agent_graph = None;
+                    this.open_chat(chat_id.clone(), cx);
+                }
+                AgentGraphEvent::Close => {
+                    this.agent_graph = None;
+                    cx.notify();
+                }
+            });
+            self.agent_graph = Some((graph, sub));
+            self.agent_graph_focus_pending = true;
+        }
+        cx.notify();
     }
 
     fn open_rename_chat(&mut self, chat_id: String, cx: &mut Context<Self>) {
@@ -4424,6 +4462,18 @@ impl Shell {
                 .flex()
                 .flex_col()
                 .child(div().flex_1().min_h_0().child(outlet))
+                .into_any_element();
+        }
+
+        if let Some((graph, _)) = &self.agent_graph {
+            return div()
+                .flex_1()
+                .min_w_0()
+                .h_full()
+                .pt(px(Theme::TITLEBAR_HEIGHT))
+                .flex()
+                .flex_col()
+                .child(div().flex_1().min_h_0().child(graph.clone()))
                 .into_any_element();
         }
 
@@ -6874,7 +6924,10 @@ impl Render for Shell {
                     return;
                 }
                 match this.route {
-                    Route::Chat => window.focus(&this.composer.focus_handle(cx), cx),
+                    Route::Chat => match &this.agent_graph {
+                        Some((graph, _)) => window.focus(&graph.read(cx).input_focus(cx), cx),
+                        None => window.focus(&this.composer.focus_handle(cx), cx),
+                    },
                     // No composer here — clear the stale handle so `focused()`
                     // reads None (the render hook below re-lands focus when the
                     // route returns to Chat; a lingering unmounted handle would
@@ -6896,9 +6949,12 @@ impl Render for Shell {
             && matches!(gate, GatePhase::Ready)
             && self.intro == IntroPhase::Dismissed
             && matches!(self.route, Route::Chat)
-            && window.focused(cx).is_none()
+            && (window.focused(cx).is_none() || std::mem::take(&mut self.agent_graph_focus_pending))
         {
-            window.focus(&self.composer.focus_handle(cx), cx);
+            match &self.agent_graph {
+                Some((graph, _)) => window.focus(&graph.read(cx).input_focus(cx), cx),
+                None => window.focus(&self.composer.focus_handle(cx), cx),
+            }
         }
 
         let root = div()
@@ -6934,6 +6990,11 @@ impl Render for Shell {
             .on_action(cx.listener(|this, _: &ToggleChanges, _, cx| {
                 if matches!(this.route, Route::Chat) {
                     this.toggle_right_pane(cx)
+                }
+            }))
+            .on_action(cx.listener(|this, _: &ToggleAgents, _, cx| {
+                if this.intro == IntroPhase::Dismissed {
+                    this.toggle_agent_graph(cx);
                 }
             }))
             .on_action(cx.listener(|this, _: &AddSpacePalette, _, cx| {

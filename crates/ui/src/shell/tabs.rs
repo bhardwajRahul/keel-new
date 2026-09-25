@@ -31,6 +31,7 @@ impl Shell {
     /// Open a session from the sidebar: select it, the main area follows.
     pub(super) fn open_chat(&mut self, chat_id: String, cx: &mut Context<Self>) {
         self.route = Route::Chat;
+        self.agent_graph = None;
         self.state
             .update(cx, |s, cx| s.select_chat(Some(chat_id), cx));
         cx.notify();
@@ -42,6 +43,7 @@ impl Shell {
     /// project, restored from composer defaults) stands.
     pub(super) fn open_new_session(&mut self, cx: &mut Context<Self>) {
         self.route = Route::Chat;
+        self.agent_graph = None;
         let target = {
             let state = self.state.read(cx);
             self.settings
@@ -146,8 +148,17 @@ impl Shell {
         } else {
             content_left
         };
-        let trailing: Option<gpui::AnyElement> = if on_canvas {
-            None
+        let agents_button = |theme: &Theme, cx: &mut Context<Self>| -> gpui::AnyElement {
+            header_icon_button(
+                "toggle-agents",
+                icons::WIDGET,
+                theme,
+                cx.listener(|this, _, _, cx| this.toggle_agent_graph(cx)),
+            )
+            .into_any_element()
+        };
+        let trailing: Option<gpui::AnyElement> = if on_canvas || self.agent_graph.is_some() {
+            Some(agents_button(&theme, cx))
         } else if self.right_pane_open(cx) {
             let right_now = self.eval_tween(self.right_tween, self.right_target(cx));
             let pr = titlebar_right_padding(cfg!(target_os = "windows"), Theme::SPACE_LG);
@@ -191,6 +202,7 @@ impl Shell {
                             .overflow_hidden()
                             .child(controls),
                     )
+                    .child(agents_button(&theme, cx))
                     .child(header_icon_button(
                         "expand-changes",
                         icons::EXPAND_ARROWS,
@@ -207,13 +219,18 @@ impl Shell {
             )
         } else {
             Some(
-                header_icon_button(
-                    "toggle-changes",
-                    icons::SIDEBAR_MINIMALISTIC,
-                    &theme,
-                    cx.listener(|this, _, _, cx| this.toggle_right_pane(cx)),
-                )
-                .into_any_element(),
+                div()
+                    .flex()
+                    .items_center()
+                    .gap(px(4.0))
+                    .child(agents_button(&theme, cx))
+                    .child(header_icon_button(
+                        "toggle-changes",
+                        icons::SIDEBAR_MINIMALISTIC,
+                        &theme,
+                        cx.listener(|this, _, _, cx| this.toggle_right_pane(cx)),
+                    ))
+                    .into_any_element(),
             )
         };
 
