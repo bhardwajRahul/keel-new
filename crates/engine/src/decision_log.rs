@@ -12,7 +12,7 @@
 use std::collections::{BTreeMap, HashSet};
 use std::path::Path;
 
-use keel_doc::{MessagePart, SessionDoc};
+use keel_doc::{MessagePart, REGISTRY_DOC_ID, RegistryDoc, SessionDoc};
 use keel_proto::{DecisionEvent, DecisionResult};
 use rusqlite::{Connection, OpenFlags};
 use serde::Serialize;
@@ -73,6 +73,14 @@ pub fn read_decisions(store_root: &Path) -> Result<Vec<ChatDecision>, EngineErro
         .collect::<Result<Vec<_>, _>>()
         .map_err(sqlite_error)?;
     let doc_ids: HashSet<&str> = rows.iter().map(|(id, _)| id.as_str()).collect();
+    // Deleting a chat tombstones its registry row and keeps the snapshot, so
+    // the registry decides which chats count. No registry: keep every chat.
+    let active: Option<HashSet<String>> = rows
+        .iter()
+        .find(|(id, _)| id == REGISTRY_DOC_ID)
+        .and_then(|(_, bytes)| RegistryDoc::from_bytes(bytes, "decision-log").ok())
+        .and_then(|registry| registry.read_chats().ok())
+        .map(|chats| chats.into_iter().map(|chat| chat.id).collect());
 
     let mut seen = HashSet::new();
     let mut out = Vec::new();
@@ -94,6 +102,9 @@ pub fn read_decisions(store_root: &Path) -> Result<Vec<ChatDecision>, EngineErro
         let Some(chat_id) = doc.chat_id() else {
             continue;
         };
+        if active.as_ref().is_some_and(|ids| !ids.contains(&chat_id)) {
+            continue;
+        }
         let Ok(entries) = doc.read_entries() else {
             continue;
         };
@@ -294,6 +305,39 @@ mod tests {
         assert_eq!(case["chatId"], "chat-1");
         assert_eq!(case["decision"]["id"], "d1");
         assert!(case["expectedCandidateId"].is_null());
+    }
+
+    #[test]
+    fn registry_tombstone_hides_deleted_chat() {
+        let dir = tempfile::tempdir().unwrap();
+        let store = keel_sync::DocsStore::open(dir.path()).unwrap();
+        let kept = event("k", DecisionBackend::Laya, DecisionResult::Abstained, 1);
+        let gone = event("g", DecisionBackend::Laya, DecisionResult::Abstained, 2);
+        save(&store, "chat-1", "chat-1", &[kept]);
+        save(&store, "chat-2", "chat-2", &[gone]);
+        let mut registry = RegistryDoc::new("test");
+        for id in ["chat-1", "chat-2"] {
+            let chat: keel_proto::Chat = serde_json::from_value(serde_json::json!({
+                "id": id,
+                "deviceId": "test",
+                "archived": false,
+                "createdAt": "2026-09-25T00:00:00Z",
+            }))
+            .unwrap();
+            registry.upsert_chat(&chat).unwrap();
+        }
+        registry.delete_chat("chat-2").unwrap();
+        store
+            .save_snapshot(REGISTRY_DOC_ID, &registry.to_bytes().unwrap())
+            .unwrap();
+        drop(store);
+
+        let ids: Vec<_> = read_decisions(dir.path())
+            .unwrap()
+            .into_iter()
+            .map(|d| d.chat_id)
+            .collect();
+        assert_eq!(ids, ["chat-1"]);
     }
 
     #[test]

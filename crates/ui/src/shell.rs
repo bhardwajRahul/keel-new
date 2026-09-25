@@ -1881,6 +1881,8 @@ impl Shell {
     fn apply_nav(&mut self, entry: NavEntry, cx: &mut Context<Self>) {
         match entry {
             NavEntry::Chat(chat_id) => {
+                // The graph replaces the chat outlet; history lands on the chat.
+                self.agent_graph = None;
                 self.route = Route::Chat;
                 let target = (!chat_id.is_empty()).then_some(chat_id);
                 if self.state.read(cx).selected_chat != target {
