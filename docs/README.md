@@ -19,6 +19,7 @@ Start with the page that matches what you need to do.
 
 These are native, editable SVG files. They contain text and vector shapes, with no embedded screenshots or external fonts.
 
+- [Readme hero](diagrams/hero.svg): the task flow in one banner. This file is hand-written; the script below does not generate it.
 - [Architecture](diagrams/architecture.svg): selection, host checks, and the two execution paths.
 - [Decision modes](diagrams/decision-modes.svg): local Laya, hosted Jev, and Normal mode.
 - [Proposed improvement loop](proposals/improvement-loop.svg): records, replay, comparison, and human review.

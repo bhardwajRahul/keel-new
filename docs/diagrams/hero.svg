@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="380" viewBox="0 0 1280 380" role="img" aria-labelledby="title desc">
+<title id="title">keel: the selector chooses. the host checks.</title>
+<desc id="desc">Keel is a local-first macOS coding workspace. A fresh task goes to one decision backend (local Laya, hosted Jev, or Normal). The host checks the choice, and then the coding agent runs the task.</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" class="fill-accent"/></marker>
+<linearGradient id="glow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" class="stop-a"/><stop offset="1" class="stop-b"/></linearGradient>
+</defs>
+<style>
+.bg{fill:#ffffff}.card{fill:url(#glow);stroke:#c8d4e4}
+.stop-a{stop-color:#f5f8ff}.stop-b{stop-color:#ffffff}
+text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;fill:#172234}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.muted{fill:#576880}.accent{fill:#2563eb}.on-accent{fill:#ffffff}
+.fill-accent{fill:#2563eb}
+.box{fill:#ffffff;stroke:#c8d4e4;stroke-width:1.5}
+.host{fill:#2563eb}.sel{stroke:#2563eb}
+.chip{fill:#eef3fb;stroke:#d6e0ee}
+.wire{fill:none;stroke:#2563eb;stroke-width:1.8}
+.wire-dim{fill:none;stroke:#9fb3cf;stroke-width:1.5;stroke-dasharray:4 5}
+.dot{fill:#2563eb}
+@media (prefers-color-scheme:dark){
+.bg{fill:#0d1117}.card{stroke:#263246}
+.stop-a{stop-color:#111a2b}.stop-b{stop-color:#0d1117}
+text{fill:#e6edf7}.muted{fill:#93a3b8}.accent{fill:#79a8ff}
+.fill-accent{fill:#79a8ff}
+.box{fill:#111827;stroke:#2a3a52}
+.host{fill:#3b6fe0}.sel{stroke:#79a8ff}
+.chip{fill:#152033;stroke:#26344c}
+.wire{stroke:#79a8ff}.wire-dim{stroke:#44587a}
+.dot{fill:#9cc0ff}
+}
+@media (prefers-reduced-motion:reduce){.dot{display:none}}
+</style>
+<rect class="bg" width="1280" height="380"/>
+<rect class="card" x="16" y="16" width="1248" height="348" rx="18" stroke-width="1.5"/>
+
+<text x="56" y="68" font-size="14" class="mono muted">v0.2 · macOS · Rust + GPUI · local-first</text>
+<text x="52" y="156" font-size="92" font-weight="700" letter-spacing="-3">keel</text>
+<text x="56" y="204" font-size="26">the selector chooses. <tspan class="accent">the host checks.</tspan></text>
+<text x="56" y="238" font-size="17" class="muted">A coding workspace that routes each fresh task, then verifies the route.</text>
+
+<text x="56" y="286" font-size="13" class="mono muted">runs the coding agents you already use</text>
+<g font-size="15" text-anchor="middle">
+<rect class="chip" x="56" y="300" width="122" height="34" rx="17"/><text x="117" y="322">Claude Code</text>
+<rect class="chip" x="188" y="300" width="72" height="34" rx="17"/><text x="224" y="322">Codex</text>
+<rect class="chip" x="270" y="300" width="80" height="34" rx="17"/><text x="310" y="322">Cursor</text>
+<rect class="chip" x="360" y="300" width="64" height="34" rx="17"/><text x="392" y="322">Grok</text>
+<rect class="chip" x="434" y="300" width="82" height="34" rx="17"/><text x="475" y="322">Hermes</text>
+<rect class="chip" x="526" y="300" width="46" height="34" rx="17"/><text x="549" y="322">pi</text>
+<rect class="chip" x="582" y="300" width="98" height="34" rx="17"/><text x="631" y="322">DeepSeek</text>
+</g>
+
+<!-- flow: task, one decision backend, host check, coding agent -->
+<path class="wire" d="M820 146 C846 146 846 86 868 86" marker-end="url(#arrow)"/>
+<path class="wire-dim" d="M820 146 L868 146" marker-end="url(#arrow)"/>
+<path class="wire-dim" d="M820 146 C846 146 846 206 868 206" marker-end="url(#arrow)"/>
+<path class="wire" d="M1050 86 C1072 86 1072 146 1088 146" marker-end="url(#arrow)"/>
+<path class="wire-dim" d="M1050 146 L1088 146"/>
+<path class="wire-dim" d="M1050 206 C1072 206 1072 146 1088 146"/>
+<path class="wire" d="M1165 178 L1165 248" marker-end="url(#arrow)"/>
+
+<rect class="box" x="700" y="118" width="120" height="56" rx="10"/>
+<text x="760" y="143" font-size="17" text-anchor="middle">fresh task</text>
+<text x="760" y="163" font-size="12" text-anchor="middle" class="mono muted">unpinned</text>
+
+<g text-anchor="middle">
+<rect class="box sel" x="870" y="64" width="180" height="44" rx="22"/>
+<text x="960" y="91" font-size="16">Laya <tspan class="muted" font-size="13">· local</tspan></text>
+<rect class="box" x="870" y="124" width="180" height="44" rx="22"/>
+<text x="960" y="151" font-size="16">Jev <tspan class="muted" font-size="13">· hosted</tspan></text>
+<rect class="box" x="870" y="184" width="180" height="44" rx="22"/>
+<text x="960" y="211" font-size="16">Normal <tspan class="muted" font-size="13">· no selector</tspan></text>
+<text x="960" y="254" font-size="12" class="mono muted">one backend per decision</text>
+</g>
+
+<rect class="host" x="1090" y="114" width="150" height="64" rx="12"/>
+<text x="1165" y="142" font-size="17" text-anchor="middle" font-weight="600" class="on-accent">host check</text>
+<text x="1165" y="162" font-size="12" text-anchor="middle" class="mono on-accent" opacity="0.85">accept · fallback</text>
+
+<rect class="box" x="1090" y="250" width="150" height="56" rx="10"/>
+<text x="1165" y="275" font-size="17" text-anchor="middle">coding agent</text>
+<text x="1165" y="295" font-size="12" text-anchor="middle" class="mono muted">own loop + auth</text>
+
+<circle class="dot" r="5">
+<animateMotion dur="3.6s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="linear" path="M820 146 C846 146 846 86 868 86 L1050 86 C1072 86 1072 146 1088 146 L1165 146 L1165 248"/>
+<animate attributeName="opacity" dur="3.6s" repeatCount="indefinite" values="0;1;1;0" keyTimes="0;0.08;0.9;1"/>
+</circle>
+</svg>
