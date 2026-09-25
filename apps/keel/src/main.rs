@@ -28,6 +28,11 @@ enum Command {
         #[command(subcommand)]
         command: ComputerUseCommand,
     },
+    /// Export or summarize recorded decision receipts (read-only).
+    Decisions {
+        #[command(subcommand)]
+        command: DecisionsCommand,
+    },
     /// Manage `keel headless` as a background service.
     Daemon {
         #[command(subcommand)]
@@ -49,6 +54,22 @@ enum ComputerUseCommand {
     Decide {
         #[arg(long, value_enum, default_value_t = computer_use::ComputerUseMode::Laya)]
         mode: computer_use::ComputerUseMode,
+    },
+}
+
+#[derive(Subcommand)]
+enum DecisionsCommand {
+    /// Write one JSON replay case per decision receipt (JSONL) to stdout or a file.
+    Export {
+        /// Output file; stdout when omitted.
+        #[arg(long)]
+        out: Option<std::path::PathBuf>,
+    },
+    /// Print counts by backend, stage, validation, fallback, and confidence.
+    Report {
+        /// Print the report as JSON.
+        #[arg(long)]
+        json: bool,
     },
 }
 
@@ -163,6 +184,7 @@ fn main() -> anyhow::Result<()> {
                 Ok(())
             }
         },
+        Some(Command::Decisions { command }) => decisions_cli(command),
         Some(Command::Daemon { command }) => match command {
             DaemonCommand::Install => daemon::install(&engine_config_from_env().data_dir),
             DaemonCommand::Uninstall => daemon::uninstall(),
@@ -190,6 +212,91 @@ fn main() -> anyhow::Result<()> {
             });
             Ok(())
         }
+    }
+}
+
+fn decisions_cli(command: DecisionsCommand) -> anyhow::Result<()> {
+    use keel_engine::decision_log;
+    use std::io::Write;
+
+    // ponytail: local profile only; add a --profile flag when synced profiles need it.
+    let store_root = engine_config_from_env()
+        .data_dir
+        .join("profiles")
+        .join("local");
+    let decisions = decision_log::read_decisions(&store_root)?;
+    match command {
+        DecisionsCommand::Export { out } => {
+            let mut writer: Box<dyn Write> = match &out {
+                Some(path) => Box::new(std::io::BufWriter::new(std::fs::File::create(path)?)),
+                None => Box::new(std::io::stdout().lock()),
+            };
+            for decision in &decisions {
+                serde_json::to_writer(&mut writer, &decision.replay_case())?;
+                writer.write_all(b"\n")?;
+            }
+            writer.flush()?;
+            if let Some(path) = out {
+                eprintln!(
+                    "Wrote {} replay cases to {}",
+                    decisions.len(),
+                    path.display()
+                );
+            }
+        }
+        DecisionsCommand::Report { json } => {
+            let report = decision_log::report(&decisions);
+            if json {
+                println!("{}", serde_json::to_string_pretty(&report)?);
+            } else {
+                print_decision_report(&report);
+            }
+        }
+    }
+    Ok(())
+}
+
+fn print_decision_report(report: &keel_engine::decision_log::DecisionReport) {
+    if report.total == 0 {
+        println!("No decision receipts recorded yet.");
+        return;
+    }
+    let pct = |n: usize| 100.0 * n as f64 / report.total as f64;
+    println!(
+        "Decision receipts: {} across {} chats",
+        report.total, report.chats
+    );
+    println!(
+        "  selected   {:>5}  ({:.0}%)",
+        report.selected,
+        pct(report.selected)
+    );
+    println!(
+        "  abstained  {:>5}  ({:.0}%)",
+        report.abstained,
+        pct(report.abstained)
+    );
+    println!(
+        "  fallback   {:>5}  ({:.0}%)",
+        report.with_fallback,
+        pct(report.with_fallback)
+    );
+    println!(
+        "  outcome    {:>5}  ({:.0}%)",
+        report.with_outcome,
+        pct(report.with_outcome)
+    );
+    for (label, counts) in [
+        ("backend", &report.by_backend),
+        ("stage", &report.by_stage),
+        ("validation", &report.by_validation),
+    ] {
+        let parts: Vec<String> = counts.iter().map(|(k, v)| format!("{k} {v}")).collect();
+        println!("{label:<11}{}", parts.join(", "));
+    }
+    match report.mean_confidence {
+        Some(mean) => println!("mean confidence {mean:.2}"),
+        None => println!("mean confidence not reported"),
     }
 }
 
