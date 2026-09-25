@@ -59,6 +59,20 @@ Use the actual path to your app. For an installation under `~/Applications`:
 
 `laya install` downloads, verifies, and selects the pinned model. Status reports local availability; it does not prove the selector ran on a task.
 
+## export and review decisions
+
+Each decision receipt stays in the transcript of its chat. Two read-only commands collect the receipts from all chats in the local profile:
+
+```sh
+keel decisions report          # counts by backend, stage, and validation
+keel decisions report --json   # the same report as JSON
+keel decisions export --out cases.jsonl
+```
+
+`export` writes one replay case per line. Each case has `chatId`, the full `decision` receipt, and an empty `expectedCandidateId`. Fill in `expectedCandidateId` before you use a case in a comparison. Leave it `null` when abstention is the expected result.
+
+The commands open the database read-only. You can run them while Keel is open. They read the local profile only.
+
 ## common setup issues
 
 | What you see | What to check |

@@ -18,6 +18,7 @@ use keel_sync::DocsStore;
 pub mod agent_accounts;
 pub mod auth;
 pub mod chat2_host;
+pub mod decision_log;
 pub mod decision_mode;
 pub mod diff_sync;
 pub mod doc_host;

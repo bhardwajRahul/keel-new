@@ -12,6 +12,7 @@
 //! - [`shell`] — sidebar + main panel + right-pane scaffold + gate;
 //! - [`loaders`] — Keel pulse loader, gradient spinner, local boot state.
 
+pub mod agent_graph;
 pub mod app_menus;
 pub mod appearance;
 pub mod attachments;
